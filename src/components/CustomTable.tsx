@@ -17,8 +17,8 @@ import {
 } from "@/store/features/pairs/pairsSlice";
 import { it } from 'node:test';
 
-interface Column {
-  id: 'No' | 'TOKEN1_ADDRESS' | 'TOKEN2_ADDRESS' | 'PAIRS_ADDRESS' | 'Bonding_Curve_Percentage' | 'BONDED_AT' | 'CREATE_AT';
+export interface Column {
+  id: 'token1_address' | 'token2_address' | 'pair_address' | 'bonding_curve_percentage' | 'bonded_at' | 'created_at';
   label: string;
   minWidth?: number;
   align?: 'right';

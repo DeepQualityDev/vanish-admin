@@ -1,12 +1,5 @@
-import { CustomTable } from "@/components/CustomTable";
+import { CustomTable, Column } from "@/components/CustomTable";
 import * as React from 'react';
-
-interface Column {
-  id: 'token1_address' | 'token2_address' | 'pair_address' | 'bonding_curve_percentage' | 'bonded_at' | 'created_at';
-  label: string;
-  minWidth?: number;
-  align?: 'right';
-}
 
 const columns: Column[] = [
   { id: 'token1_address', label: 'TOKEN1_ADDRESS', minWidth: 120 },
