@@ -11,9 +11,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {IPair} from "@/store/features/pairs/pairsAPI";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   getPairs,
-  selectPairs
+  selectPairs,
+  selectStatus
 } from "@/store/features/pairs/pairsSlice";
 import { it } from 'node:test';
 
@@ -47,6 +49,7 @@ export function CustomTable ({type, columns}: {type: string, columns:Column[] })
   }, []);
 
   const pairs : IPair[] = useAppSelector(selectPairs);
+  const status = useAppSelector(selectStatus);
 
   rows.length = 0;
   pairs.map((item: IPair, index: number) => {
@@ -65,46 +68,50 @@ export function CustomTable ({type, columns}: {type: string, columns:Column[] })
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight:  'fit-content'}}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              <TableCell key="no" align="right">
-                No
-              </TableCell>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={column.align}
-                  style={{ minWidth: column.minWidth }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    <TableCell key="no" align="right">
-                      {index + 1}
+        <TableContainer>
+          {status == "loading"?
+            <div className='flex justify-center items-center min-h-screen'><CircularProgress size={90} /></div>
+            :
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  <TableCell key="no" align="right">
+                    No
+                  </TableCell>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth }}
+                    >
+                      {column.label}
                     </TableCell>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {value}
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    return (
+                      <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                        <TableCell key="no" align="right">
+                          {index + 1}
                         </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
+                        {columns.map((column) => {
+                          const value = row[column.id];
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              {value}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          }
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}

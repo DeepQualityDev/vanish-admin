@@ -1,22 +1,30 @@
 "use client";
 import Link from "next/link";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-
+import IconButton from "@mui/material/IconButton";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import {
+  getPairs
+} from "@/store/features/pairs/pairsSlice";
 import { useRouter } from "next/navigation";
 
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export function NavMenu() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const handleLogin = () => {
     router.push("/login");
   }
+  const handleRefresh = () => {
+    dispatch(getPairs({ type: "pair"}));
+  };
   return (
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList>
@@ -33,6 +41,15 @@ export function NavMenu() {
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Login
             </NavigationMenuLink>
+          </div>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <div  onClick={handleRefresh}>
+            {/* <NavigationMenuLink className={navigationMenuTriggerStyle()}> */}
+              <IconButton aria-label="refresh">
+                <RefreshIcon sx={{color: "white", width: "40px", height: "40px"}}/>
+              </IconButton>
+            {/* </NavigationMenuLink> */}
           </div>
         </NavigationMenuItem>
       </NavigationMenuList>
