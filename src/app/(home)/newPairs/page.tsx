@@ -19,6 +19,11 @@ const columns: Column[] = [
     minWidth: 70,
   },
   {
+    id: 'pair_type',
+    label: 'PAIR_TYPE',
+    minWidth: 70,
+  },
+  {
     id: 'bonded_at',
     label: 'BONDED_AT',
     minWidth: 150,

@@ -5,15 +5,16 @@ export interface IPair {
   token2_address: string;
   pair_address: string;
   bonding_curve_percentage: number;
+  pair_type: number;
   bonded_at: string;
   created_at: string;
 }
 
-export const fetchPairs = async ({type}:{type:string}) => {
+export const fetchPairs = async ({pageNumber, perPage}:{pageNumber:number, perPage:number}) => {
   try {
     const response = await fetch("/api/pairs/get", {
       method: "POST",
-      body: JSON.stringify({ type }),
+      body: JSON.stringify({ page_number: pageNumber, per_page: perPage }),
       headers: {
         "Content-Type": "application/json",
       },

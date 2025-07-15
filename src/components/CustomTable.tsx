@@ -15,12 +15,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {
   getPairs,
   selectPairs,
-  selectStatus
+  selectStatus,
+  selectTotalCount
 } from "@/store/features/pairs/pairsSlice";
-import { it } from 'node:test';
 
 export interface Column {
-  id: 'token1_address' | 'token2_address' | 'pair_address' | 'bonding_curve_percentage' | 'bonded_at' | 'created_at';
+  id: 'token1_address' | 'token2_address' | 'pair_address' | 'bonding_curve_percentage' | 'pair_type' | 'bonded_at' | 'created_at';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -31,10 +31,11 @@ function createData(
   token2_address: string,
   pair_address: string,
   bonding_curve_percentage: number,
+  pair_type: number,
   bonded_at: string,
   created_at: string,
 ): IPair {
-  return { token1_address, token2_address, pair_address, bonding_curve_percentage, bonded_at, created_at };
+  return { token1_address, token2_address, pair_address, bonding_curve_percentage, pair_type, bonded_at, created_at };
 }
 
 const rows = [];
@@ -45,25 +46,29 @@ export function CustomTable ({type, columns}: {type: string, columns:Column[] })
   const dispatch = useAppDispatch();
 
   useEffect(()=> {
-    dispatch(getPairs({ type: "pair"}));
+    dispatch(getPairs({ pageNumber: page, perPage: rowsPerPage}));
   }, []);
 
   const pairs : IPair[] = useAppSelector(selectPairs);
+  const totalCount : number = useAppSelector(selectTotalCount);
   const status = useAppSelector(selectStatus);
 
   rows.length = 0;
   pairs.map((item: IPair, index: number) => {
-    rows.push(createData(item.token1_address, item.token2_address, item.pair_address, item.bonding_curve_percentage, item.bonded_at, item.created_at))
+    rows.push(createData(item.token1_address, item.token2_address, item.pair_address, item.bonding_curve_percentage, item.pair_type, item.bonded_at, item.created_at))
   });
-
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
+    dispatch(getPairs({ pageNumber: newPage, perPage: rowsPerPage}));
+    localStorage.setItem("page_number", newPage.toString());
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(getPairs({ pageNumber: 0, perPage: +event.target.value}));
     setRowsPerPage(+event.target.value);
     setPage(0);
+    localStorage.setItem("per_page", (+event.target.value).toString());
   };
 
   return (
@@ -91,15 +96,28 @@ export function CustomTable ({type, columns}: {type: string, columns:Column[] })
               </TableHead>
               <TableBody>
                 {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     return (
                       <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                         <TableCell key="no" align="right">
-                          {index + 1}
+                          {page * rowsPerPage + index + 1}
                         </TableCell>
                         {columns.map((column) => {
-                          const value = row[column.id];
+                          let value = row[column.id];
+                          if (column.id == 'bonding_curve_percentage' && value == -1) {
+                            value = "NULL";
+                          }
+                          if (column.id == 'pair_type') {
+                            switch (value) {
+                              case 3:
+                                value = "Pumpfun"
+                                break;
+                              case 8:
+                                value = "Launchlap"
+                              default:
+                                break;
+                            }
+                          }
                           return (
                             <TableCell key={column.id} align={column.align}>
                               {value}
@@ -116,7 +134,7 @@ export function CustomTable ({type, columns}: {type: string, columns:Column[] })
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={totalCount}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

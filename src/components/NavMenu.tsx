@@ -23,7 +23,7 @@ export function NavMenu() {
     router.push("/login");
   }
   const handleRefresh = () => {
-    dispatch(getPairs({ type: "pair"}));
+    dispatch(getPairs({ pageNumber: Number(localStorage.getItem("page_number") || 0), perPage: Number(localStorage.getItem("per_page") || "10")}));
   };
   return (
     <NavigationMenu className="hidden md:flex">

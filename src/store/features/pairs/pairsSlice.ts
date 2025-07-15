@@ -11,6 +11,7 @@ export interface AgentsSliceState {
     selectedIndex : string;
     status    : "idle" | "loading" | "failed";
     msg       : string;
+    total_count  : number;
 }
 
 const initialState: AgentsSliceState = {
@@ -19,6 +20,7 @@ const initialState: AgentsSliceState = {
     status    : "idle",
     msg       :"",
     selectedIndex : "-1",
+    total_count: 0
 };
 
 export const pairsSlice = createAppSlice({
@@ -28,8 +30,8 @@ export const pairsSlice = createAppSlice({
   
   reducers: (create) => ({
     getPairs: create.asyncThunk(
-      async ({type}:{type:string}) => {
-        const response = await fetchPairs({type});
+      async ({pageNumber, perPage}:{pageNumber:number, perPage:number}) => {
+        const response = await fetchPairs({pageNumber, perPage});
         return response;
       },
       {
@@ -40,13 +42,15 @@ export const pairsSlice = createAppSlice({
           state.status = "idle";
           if(action.payload.isSuccess) {
               let tmp_pairs = [];
-              JSON.parse(action.payload.data).map((item, index) => {
+              JSON.parse(action.payload.data).pairs.map((item, index) => {
                 tmp_pairs.push({
                   token1_address: item.token1_address, token2_address: item.token2_address, pair_address: item.pair_address, 
-                  bonding_curve_percentage: item.bonding_curve_percentage, bonded_at: item.bonded_at,  created_at: item.created_at
+                  bonding_curve_percentage: item.bonding_curve_percentage, 
+                  pair_type: item.pair_type, bonded_at: item.bonded_at,  created_at: item.created_at
                 });
               });
               state.pairs = tmp_pairs;
+              state.total_count = JSON.parse(action.payload.data).total_count;
           }else{
               state.msg = action.payload.data;
           }
@@ -69,6 +73,7 @@ export const pairsSlice = createAppSlice({
     selectIsSuccess: (pairs) => pairs.isSuccess,
     selectStatus   : (pairs) => pairs.status,
     selectPair  : (pairs) => pairs.selectedIndex,
+    selectTotalCount  : (pairs) => pairs.total_count,
   },
 });
 
@@ -77,4 +82,4 @@ export const { getPairs, setSelectedPair } =
   pairsSlice.actions;
  
 // Selectors returned by `slice.selectors` take the root state as their first argument.
-export const { selectPairs ,selectPair, selectMsg, selectIsSuccess, selectStatus } = pairsSlice.selectors;
+export const { selectPairs ,selectPair, selectMsg, selectIsSuccess, selectStatus, selectTotalCount } = pairsSlice.selectors;
