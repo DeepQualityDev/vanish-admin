@@ -16,7 +16,7 @@ import {
 const components: { title: string; href: string }[] = [
   {
     title: "New Pairs",
-    href: "/newPairs",
+    href: "/new_pairs",
   },
   {
     title: "Login",

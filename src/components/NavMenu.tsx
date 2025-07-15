@@ -29,7 +29,7 @@ export function NavMenu() {
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link href="/newPairs" legacyBehavior passHref>
+          <Link href="/new_pairs" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               New Pairs
             </NavigationMenuLink>
