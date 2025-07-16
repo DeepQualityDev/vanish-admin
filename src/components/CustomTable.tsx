@@ -114,6 +114,8 @@ export function CustomTable ({type, columns}: {type: string, columns:Column[] })
                                 break;
                               case 8:
                                 value = "Launchlap"
+                              case 10:
+                                value = "Moonit"
                               default:
                                 break;
                             }
